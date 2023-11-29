@@ -22,7 +22,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       UnoCSS(),
       // ext vite plugin
       vitePluginConfig(viteEnv),
-      nodePolyfills()
+      nodePolyfills(),
     ],
     resolve: {
       alias: {

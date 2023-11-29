@@ -8,8 +8,7 @@ import { configPluginHTML } from './plugin/html';
 import { configPluginAutoImport } from './plugin/autoImport';
 import { configPluginComponents } from './plugin/components';
 import { configPluginCDNImport } from './plugin/cdnImport';
-import { configPluginCompression } from './plugin/compression';
-import { configPluginImageOptimizer } from './plugin/imageOptimize';
+// import { configPluginCompression } from './plugin/compression';
 import { configPluginVisualizer } from './plugin/visualizer';
 
 export function vitePluginConfig(viteEnv: ViteEnv) {
@@ -19,7 +18,6 @@ export function vitePluginConfig(viteEnv: ViteEnv) {
     VITE_APP_NODE_ENV,
     VITE_BUILD_COMPRESS,
     VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE,
-    VITE_USE_IMAGEMIN,
   } = viteEnv;
 
   const isProdMode = isProd(VITE_APP_NODE_ENV ?? '');
@@ -46,8 +44,8 @@ export function vitePluginConfig(viteEnv: ViteEnv) {
   isProdMode && VITE_USE_CDN && vitePlugins.push(configPluginCDNImport());
 
   // vite-plugin-compression
-  isProdMode &&
-    vitePlugins.push(configPluginCompression(VITE_BUILD_COMPRESS ?? 'gzip', VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE));
+  // isProdMode &&
+  //   vitePlugins.push(configPluginCompression(VITE_BUILD_COMPRESS ?? 'gzip', VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE));
 
   // vite-plugin-image-optimizer
   // isProdMode && VITE_USE_IMAGEMIN && vitePlugins.push(configPluginImageOptimizer());
