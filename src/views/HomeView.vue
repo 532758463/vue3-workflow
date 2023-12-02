@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import TheWelcome from '@/components/TheWelcome.vue';
 import AuthList from '@/views/auth-list/AuthList.vue';
 import PipelineList from '@/views/pipeline/PipelineList.vue';
 import { ref } from 'vue';
-const activeKey = ref('1')
+const activeKey = ref('2')
 </script>
 
 <template>

@@ -30,8 +30,12 @@ function executeNode(node: Node, updateNodeState: UpdateNodeFn) {
         updateNodeState(node.id, status);
         console.log(`执行节点 ${node.label} 的操作`);
         // 假设节点的操作结果为 result
-        const result = `执行${node.label}成功！`;
-        resolve(result);
+        if (status === 1) {
+          const result = `执行${node.label}成功！`;
+          resolve(result);
+        } else {
+          reject(`执行节点 ${node.label} 失败${status}`);
+        }
       });
     });
   });
@@ -60,7 +64,7 @@ export async function executeNodes(nodes: Node[], edges: Edge[], updateNodeState
         // 先执行来源节点本身
         const sourcePromise = executeNode(sourceNode, updateNodeState);
         try {
-          const res = await sourcePromise;
+          await sourcePromise;
           // 并行执行具有相同来源的节点
           const parallelNodes = edges.filter(e => e.source === edge.source);
           const parallelPromises = parallelNodes.map(parallelEdge => {

@@ -5,7 +5,8 @@ import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import { vitePluginConfig } from './build';
-const nodePolyfills = require('vite-plugin-node-stdlib-browser');
+// @ts-ignore
+import nodePolyfills from 'vite-plugin-node-stdlib-browser';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }: ConfigEnv): UserConfig => {

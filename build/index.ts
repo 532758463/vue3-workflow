@@ -7,7 +7,7 @@ import { configLoaderSvg } from './loader/svgComponent';
 import { configPluginHTML } from './plugin/html';
 import { configPluginAutoImport } from './plugin/autoImport';
 import { configPluginComponents } from './plugin/components';
-import { configPluginCDNImport } from './plugin/cdnImport';
+// import { configPluginCDNImport } from './plugin/cdnImport';
 // import { configPluginCompression } from './plugin/compression';
 import { configPluginVisualizer } from './plugin/visualizer';
 
@@ -41,7 +41,6 @@ export function vitePluginConfig(viteEnv: ViteEnv) {
   vitePlugins.push(configPluginComponents());
 
   // vite-plugin-cdn-import
-  isProdMode && VITE_USE_CDN && vitePlugins.push(configPluginCDNImport());
 
   // vite-plugin-compression
   // isProdMode &&
