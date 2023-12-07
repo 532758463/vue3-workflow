@@ -46,5 +46,10 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     optimizeDeps: {
       include: ['vue', 'pinia', 'vue-router', 'ant-design-vue/es', '@vueuse/core'],
     },
+    server:{
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      }
+    }
   };
 });
