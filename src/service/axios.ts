@@ -45,21 +45,27 @@ axiosInstance.interceptors.response.use(
     }
 
     if (data.statusCode === 401 && !config.url.includes('/user/refresh')) {
-      refreshing = true;
+      try {
+        const res = await refreshToken();
+        refreshing = true;
+        if (res.code === 200) {
+          localStorage.setItem('access_token', res.data.access_token || '');
+          localStorage.setItem('refresh_token', res.data.refresh_token || '');
+          queue.forEach(({ config, resolve }) => {
+            resolve(axiosInstance(config));
+          });
+          return axiosInstance(config);
+        } else {
+          message.error(data.message);
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
 
-      const res = await refreshToken();
-
-      refreshing = false;
-      if (res.code === 200) {
-        localStorage.setItem('access_token', res.data.access_token || '');
-        localStorage.setItem('refresh_token', res.data.refresh_token || '');
-        queue.forEach(({ config, resolve }) => {
-          resolve(axiosInstance(config));
-        });
-
-        return axiosInstance(config);
-      } else {
-        message.error(data.message);
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1500);
+        }
+      } catch (error: any) {
+        message.error(error?.message);
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
 
@@ -67,14 +73,18 @@ axiosInstance.interceptors.response.use(
           window.location.href = '/login';
         }, 1500);
       }
+
+
+      refreshing = false;
+
     } else {
       return error.response;
     }
   }
 );
 async function refreshToken() {
-  const res:Response<{
-    access_token:string;
+  const res: Response<{
+    access_token: string;
     refresh_token: string;
   }> = await axiosInstance.get('/user/refresh', {
     params: {
