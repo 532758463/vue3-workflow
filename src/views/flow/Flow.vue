@@ -348,10 +348,6 @@ function onEacute() {
   .dndflow {
     flex-direction: row;
   }
-
-  .dndflow aside {
-    min-width: 25%;
-  }
 }
 
 @media screen and (max-width: 639px) {
