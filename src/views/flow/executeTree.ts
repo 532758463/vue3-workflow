@@ -19,6 +19,7 @@ function executeNode(node: Node, updateNodeState: UpdateNodeFn) {
     // 执行节点的操作，这里假设节点的操作是一个异步操作
     const buildParams = node.data.buildParams;
     updateNodeState(node.id, 0);
+    console.log(`执行节点 ${node.label} 的操作`);
     sendTask(buildParams).then((res) => {
       const params = {
         projectId: buildParams.projectId,
@@ -28,7 +29,6 @@ function executeNode(node: Node, updateNodeState: UpdateNodeFn) {
       };
       fetchState(params, (status: any) => {
         updateNodeState(node.id, status);
-        console.log(`执行节点 ${node.label} 的操作`);
         // 假设节点的操作结果为 result
         if (status === 1) {
           const result = `执行${node.label}成功！`;
@@ -37,9 +37,6 @@ function executeNode(node: Node, updateNodeState: UpdateNodeFn) {
           reject(`执行节点 ${node.label} 失败${status}`);
         }
       });
-    }).catch(()=>{
-      updateNodeState(node.id, 2);
-      reject(`执行节点 ${node.label} 失败 sendTask`);
     });
   });
 }
@@ -51,7 +48,16 @@ export async function executeNodes(
 ) {
   const nodeMap = new Map();
   const promises = [];
+  // 只有一个节点时
+  if (!edges.length && nodes.length === 1) {
+    // 先执行来源节点本身
+    const sourcePromise = executeNode(nodes[0], updateNodeState);
+    promises.push(sourcePromise);
+    return await Promise.all(promises);
+  }
 
+  const executedNodeIds = new Set();
+  const targetIds = new Set();
   // 创建节点映射
   for (const node of nodes) {
     nodeMap.set(node.id, node);
@@ -60,37 +66,36 @@ export async function executeNodes(
   // 按照edges的连线规则执行节点
   for (const edge of edges) {
     const sourceNode = nodeMap.get(edge.source);
-    const targetNode = nodeMap.get(edge.target);
-
-    if (sourceNode && targetNode) {
+    if (sourceNode) {
       // 检查节点是否已经执行过
-      if (!sourceNode.data.executed) {
+      if (!executedNodeIds.has(sourceNode.id)) {
         // 标记节点已经执行过
         sourceNode.data.executed = true;
-
+        executedNodeIds.add(sourceNode.id);
         try {
-          // 先执行来源节点本身
-          await executeNode(sourceNode, updateNodeState);
-          // 并行执行具有相同来源的节点
+          // 先执行来源节点本身，如果之前源节点的目标节点执行过就不再执行，只执行它的目标节点
+          if(!targetIds.has(sourceNode.id)){
+            await executeNode(sourceNode, updateNodeState);
+          }
+           // 并行执行具有相同来源的节点
           const parallelNodes = edges.filter((e) => e.source === edge.source);
           const parallelPromises = parallelNodes.map((parallelEdge) => {
             const parallelTargetNode = nodeMap.get(parallelEdge.target);
+            targetIds.add(parallelEdge.target);
             return executeNode(parallelTargetNode, updateNodeState);
           });
           promises.push(...parallelPromises);
+          await Promise.all(promises);
         } catch (err) {
-          console.log(err)
+          updateNodeState(sourceNode.id, 2);
           return Promise.reject(err);
         }
       }
     }
   }
-  if (!edges.length && nodes.length === 1) {
-    // 先执行来源节点本身
-    const sourcePromise = executeNode(nodes[0], updateNodeState);
-    promises.push(sourcePromise);
-  }
-  return await Promise.all(promises);
+  return new Promise((resolve)=>{
+    resolve('success')
+  })
 }
 
 // executeNodes(data.nodes, data.edges)

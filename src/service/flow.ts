@@ -38,11 +38,19 @@ export async function getBranches(params: QueryBranchesParams) {
 
 // 获取构建状态
 export async function getBuildState(params: QueryBuildState) {
+   // 调试使用
+  // return new Promise((resolve)=>{
+  //   resolve({data:1})
+  // })
   return await openApi.post('/flow/getBuildState', params);
 }
 
 // 构建
 export async function sendTask(params: any) {
+  // 调试使用
+  // return new Promise((resolve)=>{
+  //   resolve({data:1})
+  // })
   return await openApi.post('/flow/sendTask', params);
 }
 // 保存流程图信息
